@@ -19,134 +19,235 @@ text {
   stroke-opacity: .6;
 }
 
+div#header {
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0);
+}
+
+div#legend {
+  position:absolute;
+  bottom:12px;
+  left:12px;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0);
+  border-width:1px;
+  border-style:solid;
+  border-color:#999;
+  padding: 7px 10px 10px 10px;
+}
+
+#force {
+  position:absolute;
+  top:0px;
+  left:0px;
+  z-index: 0;
+}
+
+h1 {
+  margin: 0px;
+  font: 24px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  color: #666;
+  font-weight:500;
+}
+
+h2 {
+  margin: 0px 0px 0px 1px;
+  font: 14px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  color: #999;
+  font-weight:200;
+}
+
+h3 {
+  margin: 0px 0px 8px 0px;
+  font: 18px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  color: #666;
+  font-weight:700;
+}
+
+h4 {
+  margin: 0px;
+  font: 12px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  color: #666;
+  font-weight:700;
+}
+ul {
+  margin: 0px 0px 2px 0px;
+  font: 11px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  color: #999;
+  font-weight:700;
+}
+
+span#solid {
+  margin: 0px;
+  padding: 0px;
+  border-bottom: 1px solid #999;
+}
+
+span#dashed {
+  margin: 0px;
+  padding: 0px;
+  border-bottom: 1px dashed #999;
+}
+
+
 </style>
 <body>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script>
-// width and height for svg element
-var width = Math.max(800, window.innerWidth - 20),
-    height = Math.max(500, window.innerHeight - 20);
+  <div id="header">
+    <h1>CS Force Graph</h1>
+    <h2>a graph of class requisites in UCLA's CS major </h2>
+  </div>
+  <div id="legend">
+    <h3>Legend</h3>
+    <h4>Color Scheme:</h4>
+    <ul style="margin-bottom: 6px">
+      <li style="color: #ace">Lower Div CS Courses</li>
+      <li style="color: #17b">Upper Div CS Requirements</li>
+      <li style="color: #96b">Upper Div CS Electives</li>
+      <li style="color: #2a2">Math Courses</li>
+      <li style="color: #f70">Science Courses</li>
+      <li style="color: #753">Writing II (Ethics)</li>
+    </ul>
+    <h4>Lines (Requisites):</h4>
+    <ul>
+      <li><span id="solid">Solid</span> - Enforced</li>
+      <li><span id="dashed">Dashed</span> - Recommended</li>
+    </ul>
+  </div>
 
-// starts force layout and svg element
-var force = d3.layout.force()
-    .gravity(0.13)
-    .charge(-340)
-    .linkDistance(110)
-    .size([width, height]);
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script id="force">
+    // width and height for svg element
+    var width = Math.max(800, window.innerWidth - 20),
+        height = Math.max(500, window.innerHeight - 20);
 
-svg.append("defs").append("marker") // for line arrow
-    .attr("id", "arrowhead")
-    .attr("refX", 18)
-    .attr("refY", 3)
-    .attr("markerWidth", 8)
-    .attr("markerHeight", 6)
-    .attr("orient", "auto")
-    .append("path")
-    .attr("d", "M 0,0 V 6 L8,3 Z")
-    .attr("fill", "#BBBBBB");
+    // starts force layout and svg element
+    var force = d3.layout.force()
+        .gravity(0.13)
+        .charge(-340)
+        .linkDistance(110)
+        .size([width, height]);
 
-// json
-d3.json("courses.json", function(error, graph) {
-  // grab node and relation values from data
-  var nodes = graph.nodes;
-  var relations = graph.relations;
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
-  //parse relations into links
-  var links = [];
-  relations.forEach(function(e) { 
-      // get source and target index
-      var sourceIndex = nodes.filter(function(n) { return n.name === e.source; })[0],
-          targetIndex = nodes.filter(function(n) { return n.name === e.target; })[0];
-      // push tuple onto link array
-      links.push({source: sourceIndex, target: targetIndex, type: relations.type});
-  });
+    svg.append("defs").append("marker") // for line arrow
+        .attr("id", "arrowhead")
+        .attr("refX", 18)
+        .attr("refY", 3)
+        .attr("markerWidth", 8)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M 0,0 V 6 L8,3 Z")
+        .attr("fill", "#BBBBBB");
 
-  // set nodes and links and starts
-  force
-      .nodes(nodes)
-      .links(links)
-      .start();
+    // json
+    d3.json("courses.json", function(error, graph) {
+      // grab node and relation values from data
+      var nodes = graph.nodes;
+      var relations = graph.relations;
 
-  // draw links
-  var link = svg.selectAll(".link")
-      .data(links)
-    .enter().append("line")
-      .attr("class", "link")
-      .attr("marker-end", "url(#arrowhead)");
-
-  // create svg group for nodes and text
-  var node = svg.selectAll(".node")
-      .data(nodes)
-    .enter().append("g")
-      .attr("class", "node")
-      .call(force.drag);
-
-  // draw nodes, color depending on type of class
-  var color = ["#ace", "#17b", "#2a2", "#f70", "#96b", "#753"];
-  node.append("circle")
-      .attr("r", 10)
-      .style("fill", function(d) { 
-        if(d.type == "lowerdiv") return color[0];
-        if(d.type == "upperdiv") return color[1];
-        if(d.type == "math") return color[2];
-        if(d.type == "science") return color[3];
-        if(d.type == "elective") return color[4];
-        if(d.type == "writing") return color[5];
+      //parse relations into links
+      var links = [];
+      relations.forEach(function(e) { 
+          // get source and target index
+          var sourceIndex = nodes.filter(function(n) { return n.name === e.source; })[0],
+              targetIndex = nodes.filter(function(n) { return n.name === e.target; })[0];
+          // push tuple onto link array
+          links.push({source: sourceIndex, target: targetIndex, type: e.type});
       });
-  node.on("mouseover", function(d){
-      var currentNode = d3.select(this).select("circle");
-      var currentColor = d3.rgb(currentNode.style("fill"));
 
-      currentNode
-        .attr("r", 11.5)
-        .style("fill", currentColor.brighter(0.5));
-        /*
-        var nodeNeighbors = graph.links.filter(function(link) {
-            return link.source.index === d.index || link.target.index === d.index;
-        })
-        .map(function(link) {
-             return link.source.index === d.index ? link.target.index : link.source.index;
-        });               
-        svg.selectAll("circle").style("fill", "gray");
-        svg.selectAll("circle").filter(function(node) {
-            return nodeNeighbors.indexOf(node.index) > -1;
-        }).style('stroke', 'orange');
-        */
-  }).on("mouseout",  function(d) {
-      var currentNode = d3.select(this).select("circle");
-      var currentColor = d3.rgb(currentNode.style("fill"));
-      currentNode
-        .attr("r", 10)
-        .style("stroke-width", 0)
-        .style("fill", function(d) { 
-          if(d.type == "lowerdiv") return color[0];
-          if(d.type == "upperdiv") return color[1];
-          if(d.type == "math") return color[2];
-          if(d.type == "science") return color[3];
-          if(d.type == "elective") return color[4];
-          if(d.type == "writing") return color[5];
-        });
-  });
+      // set nodes and links and starts
+      force
+          .nodes(nodes)
+          .links(links)
+          .start();
 
-  // node text
-  node.append("text")
-      .attr("x", 12)
-      .attr("dy", ".35em")
-      .text(function(d) {return d.name;} );
+      // draw links
+      var link = svg.selectAll(".link")
+          .data(links)
+        .enter().append("line")
+          .attr("class", "link")
+          .attr("stroke-dasharray", function(d) {
+            if(d.type == "Recommended") return "5,5";
+            else return "0,0";
+          })
+          .attr("marker-end", "url(#arrowhead)");
 
-  // force tick
-  force.on("tick", function() {
-    link.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
+      // create svg group for nodes and text
+      var node = svg.selectAll(".node")
+          .data(nodes)
+        .enter().append("g")
+          .attr("class", "node")
+          .call(force.drag);
 
-    node.attr("transform", function(d) { 
-        return "translate(" + d.x + "," + d.y + ")"; });
-  });
-});
+      // draw nodes, color depending on type of class
+      var color = ["#ace", "#17b", "#2a2", "#f70", "#96b", "#753"];
+      node.append("circle")
+          .attr("r", 10)
+          .style("fill", function(d) { 
+            if(d.type == "lowerdiv") return color[0];
+            if(d.type == "upperdiv") return color[1];
+            if(d.type == "math") return color[2];
+            if(d.type == "science") return color[3];
+            if(d.type == "elective") return color[4];
+            if(d.type == "writing") return color[5];
+          });
+      node.on("mouseover", function(d){
+          var currentNode = d3.select(this).select("circle");
+          var currentColor = d3.rgb(currentNode.style("fill"));
 
-</script>
+          currentNode
+            .attr("r", 11.5)
+            .style("fill", currentColor.brighter(0.5));
+            /*
+            var nodeNeighbors = graph.links.filter(function(link) {
+                return link.source.index === d.index || link.target.index === d.index;
+            })
+            .map(function(link) {
+                 return link.source.index === d.index ? link.target.index : link.source.index;
+            });               
+            svg.selectAll("circle").style("fill", "gray");
+            svg.selectAll("circle").filter(function(node) {
+                return nodeNeighbors.indexOf(node.index) > -1;
+            }).style('stroke', 'orange');
+            */
+      }).on("mouseout",  function(d) {
+          var currentNode = d3.select(this).select("circle");
+          var currentColor = d3.rgb(currentNode.style("fill"));
+          currentNode
+            .attr("r", 10)
+            .style("stroke-width", 0)
+            .style("fill", function(d) { 
+              if(d.type == "lowerdiv") return color[0];
+              if(d.type == "upperdiv") return color[1];
+              if(d.type == "math") return color[2];
+              if(d.type == "science") return color[3];
+              if(d.type == "elective") return color[4];
+              if(d.type == "writing") return color[5];
+            });
+      });
+
+      // node text
+      node.append("text")
+          .attr("x", 12)
+          .attr("dy", ".35em")
+          .text(function(d) {return d.name;} );
+
+      // force tick
+      force.on("tick", function() {
+        link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+        node.attr("transform", function(d) { 
+            return "translate(" + d.x + "," + d.y + ")"; });
+      });
+    });
+  </script>
+</body>
