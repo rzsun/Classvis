@@ -39,7 +39,15 @@ div#legend {
   padding: 7px 10px 10px 10px;
 }
 
-#force {
+p#info {
+  margin: 8px 0px 0px 0px;
+  font: 12px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  width: 253px;
+  color: #666;
+  font-weight:400;
+}
+
+div#force {
   position:absolute;
   top:0px;
   left:0px;
@@ -92,12 +100,39 @@ span#dashed {
   border-bottom: 1px dashed #999;
 }
 
+a {
+  text-decoration: underline;
+  color: #aaa;
+}
+a:visited {
+    color: #aaa;
+}
+
+a:hover {
+    color: #ccc;
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin:; 3px 0px 3px 0px;
+  padding: 0;
+  width: 293px;
+}
 
 </style>
 <body>
   <div id="header">
     <h1>CS Force Graph</h1>
-    <h2>a graph of class requisites in UCLA's CS major using d3.js's force layout</h2>
+    <h2>a graph of class requisites in UCLA's CS major</h2>
+    <hr>
+    <p id="info">A force directed graph implemented using 
+      <a href="https://github.com/mbostock/d3/wiki/Force-Layout">Force Layout</a>
+     from <a href="http://d3js.org/">d3.js</a>.<br><br>
+      Classes are represented by nodes. When one node points to another, the class represented by that node
+      is the prerequisite of the other class.</p>
   </div>
   <div id="legend">
     <h3>Legend</h3>
@@ -117,8 +152,9 @@ span#dashed {
     </ul>
   </div>
 
+  <div id="force">
   <script src="http://d3js.org/d3.v3.min.js"></script>
-  <script id="force">
+  <script>
     // width and height for svg element
     var width = Math.max(800, window.innerWidth - 20),
         height = Math.max(500, window.innerHeight - 20);
@@ -249,5 +285,5 @@ span#dashed {
             return "translate(" + d.x + "," + d.y + ")"; });
       });
     });
-  </script>
+  </script></div>
 </body>
