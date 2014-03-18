@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  fill: #111;
+  font: 10px sans-serif;
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+// width and height for svg element
+var width = Math.max(800, window.innerWidth - 20),
+    height = Math.max(500, window.innerHeight - 20);
+
+// starts force layout and svg element
+var force = d3.layout.force()
+    .gravity(0.13)
+    .charge(-340)
+    .linkDistance(110)
+    .size([width, height]);
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+svg.append("defs").append("marker") // for line arrow
+    .attr("id", "arrowhead")
+    .attr("refX", 18)
+    .attr("refY", 3)
+    .attr("markerWidth", 8)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M 0,0 V 6 L8,3 Z")
+    .attr("fill", "#BBBBBB");
+
+// json
+d3.json("courses.json", function(error, graph) {
+  // grab node and relation values from data
+  var nodes = graph.nodes;
+  var relations = graph.relations;
+
+  //parse relations into links
+  var links = [];
+  relations.forEach(function(e) { 
+      // get source and target index
+      var sourceIndex = nodes.filter(function(n) { return n.name === e.source; })[0],
+          targetIndex = nodes.filter(function(n) { return n.name === e.target; })[0];
+      // push tuple onto link array
+      links.push({source: sourceIndex, target: targetIndex, type: relations.type});
+  });
+
+  // set nodes and links and starts
+  force
+      .nodes(nodes)
+      .links(links)
+      .start();
+
+  // draw links
+  var link = svg.selectAll(".link")
+      .data(links)
+    .enter().append("line")
+      .attr("class", "link")
+      .attr("marker-end", "url(#arrowhead)");
+
+  // create svg group for nodes and text
+  var node = svg.selectAll(".node")
+      .data(nodes)
+    .enter().append("g")
+      .attr("class", "node")
+      .call(force.drag);
+
+  // draw nodes, color depending on type of class
+  var color = ["#ace", "#17b", "#2a2", "#f70", "#96b", "#753"];
+  node.append("circle")
+      .attr("r", 10)
+      .style("fill", function(d) { 
+        if(d.type == "lowerdiv") return color[0];
+        if(d.type == "upperdiv") return color[1];
+        if(d.type == "math") return color[2];
+        if(d.type == "science") return color[3];
+        if(d.type == "elective") return color[4];
+        if(d.type == "writing") return color[5];
+      });
+  node.on("mouseover", function(d){
+      var currentNode = d3.select(this).select("circle");
+      var currentColor = d3.rgb(currentNode.style("fill"));
+
+      currentNode
+        .attr("r", 11.5)
+        .style("fill", currentColor.brighter(0.5));
+        /*
+        var nodeNeighbors = graph.links.filter(function(link) {
+            return link.source.index === d.index || link.target.index === d.index;
+        })
+        .map(function(link) {
+             return link.source.index === d.index ? link.target.index : link.source.index;
+        });               
+        svg.selectAll("circle").style("fill", "gray");
+        svg.selectAll("circle").filter(function(node) {
+            return nodeNeighbors.indexOf(node.index) > -1;
+        }).style('stroke', 'orange');
+        */
+  }).on("mouseout",  function(d) {
+      var currentNode = d3.select(this).select("circle");
+      var currentColor = d3.rgb(currentNode.style("fill"));
+      currentNode
+        .attr("r", 10)
+        .style("stroke-width", 0)
+        .style("fill", function(d) { 
+          if(d.type == "lowerdiv") return color[0];
+          if(d.type == "upperdiv") return color[1];
+          if(d.type == "math") return color[2];
+          if(d.type == "science") return color[3];
+          if(d.type == "elective") return color[4];
+          if(d.type == "writing") return color[5];
+        });
+  });
+
+  // node text
+  node.append("text")
+      .attr("x", 12)
+      .attr("dy", ".35em")
+      .text(function(d) {return d.name;} );
+
+  // force tick
+  force.on("tick", function() {
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node.attr("transform", function(d) { 
+        return "translate(" + d.x + "," + d.y + ")"; });
+  });
+});
+
+</script>
