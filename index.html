@@ -126,7 +126,7 @@ hr {
 <body>
   <div id="header">
     <h1>CS Force Graph</h1>
-    <h2>a graph of class requisites in UCLA's CSE major</h2>
+    <h2>a graph of class requisites in UCLA's CS major</h2>
     <hr>
     <p id="info">A force directed graph implemented using 
       <a href="https://github.com/mbostock/d3/wiki/Force-Layout">Force Layout</a>
@@ -141,9 +141,6 @@ hr {
       <li style="color: #ace">Lower Div CS Courses</li>
       <li style="color: #17b">Upper Div CS Requirements</li>
       <li style="color: #96b">Upper Div CS Electives</li>
-      <li style="color: #fcf">Lower Div EE Courses</li>
-      <li style="color: #fc0">Upper Div EE Requirements</li>
-      <li style="color: #c30">Upper Div EE Electives</li>
       <li style="color: #2a2">Math Courses</li>
       <li style="color: #f70">Science Courses</li>
       <li style="color: #753">Writing II (Ethics)</li>
@@ -228,7 +225,7 @@ hr {
           .call(force.drag);
 
       // draw nodes, color depending on type of class
-      var color = ["#ace", "#17b", "#2a2", "#f70", "#96b", "#753", "#fcf", "#fc0", "#c30"];
+      var color = ["#ace", "#17b", "#2a2", "#f70", "#96b", "#753"];
       node.append("circle")
           .attr("r", 10)
           .style("fill", function(d) { 
@@ -238,9 +235,6 @@ hr {
             if(d.type == "science") return color[3];
             if(d.type == "elective") return color[4];
             if(d.type == "writing") return color[5];
-            if(d.type == "ee-lowerdiv") return color[6];
-            if(d.type == "ee-upperdiv") return color[7];
-            if(d.type == "ee-elective") return color[8];
           });
       node.on("mouseover", function(d){
           var currentNode = d3.select(this).select("circle");
@@ -262,9 +256,6 @@ hr {
               if(d.type == "science") return color[3];
               if(d.type == "elective") return color[4];
               if(d.type == "writing") return color[5];
-              if(d.type == "ee-lowerdiv") return color[6];
-              if(d.type == "ee-upperdiv") return color[7];
-              if(d.type == "ee-elective") return color[8];
             });
       });
 
