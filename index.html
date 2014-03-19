@@ -189,16 +189,13 @@ hr {
 
       //parse relations into links
       var links = [];
-      for(var relType in relations) { // iterate all relation types
-        for(var className in relations[relType]) { // iterate over all classes that have a prereq
-          relations[relType][className].forEach(function(prereq) { // iterate over all prereqs for the given class
-            var sourceIndex = nodes.find(function(n) { return n.name === prereq;    }),
-                targetIndex = nodes.find(function(n) { return n.name === className; });
-
-            links.push({source: sourceIndex, target: targetIndex, type: relType});
-          });
-        }
-      };
+      relations.forEach(function(e) { 
+          // get source and target index
+          var sourceIndex = nodes.filter(function(n) { return n.name === e.source; })[0],
+              targetIndex = nodes.filter(function(n) { return n.name === e.target; })[0];
+          // push tuple onto link array
+          links.push({source: sourceIndex, target: targetIndex, type: e.type});
+      });
 
       // set nodes and links and starts
       force
@@ -243,6 +240,18 @@ hr {
           currentNode
             .attr("r", 11.5)
             .style("fill", currentColor.brighter(0.5));
+            /*
+            var nodeNeighbors = graph.links.filter(function(link) {
+                return link.source.index === d.index || link.target.index === d.index;
+            })
+            .map(function(link) {
+                 return link.source.index === d.index ? link.target.index : link.source.index;
+            });               
+            svg.selectAll("circle").style("fill", "gray");
+            svg.selectAll("circle").filter(function(node) {
+                return nodeNeighbors.indexOf(node.index) > -1;
+            }).style('stroke', 'orange');
+            */
       }).on("mouseout",  function(d) {
           var currentNode = d3.select(this).select("circle");
           var currentColor = d3.rgb(currentNode.style("fill"));
