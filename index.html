@@ -1,130 +1,8 @@
 <!DOCTYPE html>
 <head>
   <title>CS Force Graph</title>
-  <meta charset="utf-8">
-  <style>
-    circle {
-      stroke: #fff;
-      stroke-width: 1.5px;
-    }
-
-    text {
-      fill: #111;
-      font: 10px sans-serif;
-      pointer-events: none;
-      text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-    }
-
-    .link {
-      stroke: #999;
-      stroke-opacity: .6;
-    }
-
-    div#header {
-      position:absolute;
-      top:12px;
-      left:12px;
-      z-index: 1;
-      background-color: rgba(255, 255, 255, 0);
-    }
-
-    div#legend {
-      position:absolute;
-      bottom:12px;
-      left:12px;
-      z-index: 1;
-      background-color: rgba(255, 255, 255, 0);
-      border-width:1px;
-      border-style:solid;
-      border-color:#999;
-      padding: 7px 10px 10px 10px;
-    }
-
-    p#info {
-      margin: 8px 0px 0px 0px;
-      font: 12px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-      width: 253px;
-      color: #666;
-      font-weight:400;
-    }
-
-    div#force {
-      position:absolute;
-      top:0px;
-      left:0px;
-      z-index: 0;
-    }
-
-    h1 {
-      margin: 0px;
-      font: 24px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-      color: #666;
-      font-weight:500;
-    }
-
-    h2 {
-      margin: 0px 0px 0px 1px;
-      font: 14px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-      color: #999;
-      font-weight:200;
-    }
-
-    h3 {
-      margin: 0px 0px 8px 0px;
-      font: 18px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-      color: #666;
-      font-weight:700;
-    }
-
-    h4 {
-      margin: 0px;
-      font: 12px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-      color: #666;
-      font-weight:700;
-    }
-    ul {
-      margin: 0px 0px 2px 0px;
-      font: 11px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-      color: #999;
-      font-weight:700;
-      list-style-type: none;
-      padding-left: 20px;
-    }
-
-    span#solid {
-      margin: 0px;
-      padding: 0px;
-      border-bottom: 1px solid #999;
-    }
-
-    span#dashed {
-      margin: 0px;
-      padding: 0px;
-      border-bottom: 1px dashed #999;
-    }
-
-    a {
-      text-decoration: underline;
-      color: #aaa;
-    }
-    a:visited {
-        color: #aaa;
-    }
-
-    a:hover {
-        color: #ccc;
-    }
-
-    hr {
-      display: block;
-      height: 1px;
-      border: 0;
-      border-top: 1px solid #ccc;
-      margin:; 3px 0px 3px 0px;
-      padding: 0;
-      width: 293px;
-    }
-  </style>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" href="styles.css"/>
 </head>
 <body>
   <div id="header">
@@ -191,7 +69,14 @@
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script>
 
-    var color = ["#ace", "#17b", "#2a2", "#f70", "#96b", "#753"];
+    var color = {
+        "lowerdiv": "#ace",
+        "upperdiv": "#17b",
+        "math": "#2a2",
+        "science": "#f70",
+        "elective": "#96b",
+        "writing": "#753"
+    };
 
     // width and height for svg element
     var width = Math.max(800, window.innerWidth - 20),
@@ -225,42 +110,6 @@
     var node = svg.selectAll(".node"),
         link = svg.selectAll(".link");
 
-    // draw nodes, color depending on type of class
-    node.on("mouseover", function(d){
-        var currentNode = d3.select(this).select("circle");
-        var currentColor = d3.rgb(currentNode.style("fill"));
-
-        currentNode
-          .attr("r", 11.5)
-          .style("fill", currentColor.brighter(0.5));
-          /*
-          var nodeNeighbors = graph.links.filter(function(link) {
-              return link.source.index === d.index || link.target.index === d.index;
-          })
-          .map(function(link) {
-               return link.source.index === d.index ? link.target.index : link.source.index;
-          });               
-          svg.selectAll("circle").style("fill", "gray");
-          svg.selectAll("circle").filter(function(node) {
-              return nodeNeighbors.indexOf(node.index) > -1;
-          }).style('stroke', 'orange');
-          */
-    }).on("mouseout",  function(d) {
-        var currentNode = d3.select(this).select("circle");
-        var currentColor = d3.rgb(currentNode.style("fill"));
-        currentNode
-          .attr("r", 10)
-          .style("stroke-width", 0)
-          .style("fill", function(d) { 
-            if(d.type == "lowerdiv") return color[0];
-            if(d.type == "upperdiv") return color[1];
-            if(d.type == "math") return color[2];
-            if(d.type == "science") return color[3];
-            if(d.type == "elective") return color[4];
-            if(d.type == "writing") return color[5];
-          });
-    });
-
     // force tick
     force.on("tick", function() {
       link.attr("x1", function(d) { return d.source.x; })
@@ -291,20 +140,41 @@
         .call(force.drag);
       nodeEnter.append("circle")
         .attr("r", 10)
-        .style("fill", function(d) { 
-          if(d.type == "lowerdiv") return color[0];
-          if(d.type == "upperdiv") return color[1];
-          if(d.type == "math") return color[2];
-          if(d.type == "science") return color[3];
-          if(d.type == "elective") return color[4];
-          if(d.type == "writing") return color[5];
-        });
+        .style("fill", function(d) { return color[d.type]; });
       nodeEnter.append("text")
         .attr("x", 12)
         .attr("dy", ".35em")
         .text(function(d) {return d.name;} );
       node.exit().remove();
 
+      // bind events
+      node.on("mouseover", function(d){
+          var currentNode = d3.select(this).select("circle");
+          var currentColor = d3.rgb(currentNode.style("fill"));
+
+          currentNode
+            .attr("r", 11.5)
+            .style("fill", currentColor.brighter(0.5));
+            /*
+            var nodeNeighbors = graph.links.filter(function(link) {
+                return link.source.index === d.index || link.target.index === d.index;
+            })
+            .map(function(link) {
+                 return link.source.index === d.index ? link.target.index : link.source.index;
+            });               
+            svg.selectAll("circle").style("fill", "gray");
+            svg.selectAll("circle").filter(function(node) {
+                return nodeNeighbors.indexOf(node.index) > -1;
+            }).style('stroke', 'orange');
+            */
+      }).on("mouseout",  function(d) {
+          var currentNode = d3.select(this).select("circle");
+          var currentColor = d3.rgb(currentNode.style("fill"));
+          currentNode
+            .attr("r", 10)
+            .style("stroke-width", 0)
+            .style("fill", function(d) { return color[d.type]; });
+      });
     }
 
     function updateForce() {
