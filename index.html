@@ -98,12 +98,14 @@
         .attr("width", width)
         .attr("height", height);
 
-    // link and node for svg element
+    // link, node, and label for svg element
     // putting elements inside container groups enforces drawing order
     svg.append("g").attr("class", "links")
     svg.append("g").attr("class", "nodes")
+    svg.append("g").attr("class", "labels")
     var node = svg.select(".nodes").selectAll(".node"),
-        link = svg.select(".links").selectAll(".link");
+        link = svg.select(".links").selectAll(".link"),
+        label = svg.select(".labels").selectAll(".label");
 
     // define line arrow
     svg.append("defs").append("marker")
@@ -126,6 +128,9 @@
 
       node.attr("transform", function(d) { 
           return "translate(" + d.x + "," + d.y + ")"; });
+
+      label.attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")"; });
     });
 
     // synchronize svg display of nodes and links in force layout
@@ -142,29 +147,31 @@
       link.exit().remove();
 
       node = node.data(force.nodes(), function(d) { return d.name; });
-      var nodeEnter = node.enter()
-        .append("g")
-        .attr("class", "node")
-        .call(force.drag);
-      nodeEnter.append("circle")
+      node.enter()
+        .append("circle")
         .attr("r", 10)
-        .style("fill", function(d) { return color[d.type]; });
-      nodeEnter.append("text")
+        .style("fill", function(d) { return color[d.type]; })
+        .call(force.drag);
+      node.exit().remove();
+
+      label = label.data(force.nodes(), function(d) { return d.name; });
+      label.enter()
+        .append("text")
         .attr("x", 12)
         .attr("dy", ".35em")
-        .text(function(d) {return d.name;} );
-      node.exit().remove();
+        .text(function(d) { return d.name; });
+      label.exit().remove();
 
       // bind events to node
       node.on("mouseover", function(d){
-          var currentNode = d3.select(this).select("circle");
+          var currentNode = d3.select(this);
           var currentColor = d3.rgb(currentNode.style("fill"));
 
           currentNode
             .attr("r", 11.5)
             .style("fill", currentColor.brighter(0.5));
       }).on("mouseout",  function(d) {
-          var currentNode = d3.select(this).select("circle");
+          var currentNode = d3.select(this);
           var currentColor = d3.rgb(currentNode.style("fill"));
           currentNode
             .attr("r", 10)
