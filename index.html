@@ -1,128 +1,9 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-
-circle {
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
-
-text {
-  fill: #111;
-  font: 10px sans-serif;
-  pointer-events: none;
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-}
-
-.link {
-  stroke: #999;
-  stroke-opacity: .6;
-}
-
-div#header {
-  position:absolute;
-  top:12px;
-  left:12px;
-  z-index: 1;
-  background-color: rgba(255, 255, 255, 0);
-}
-
-div#legend {
-  position:absolute;
-  bottom:12px;
-  left:12px;
-  z-index: 1;
-  background-color: rgba(255, 255, 255, 0);
-  border-width:1px;
-  border-style:solid;
-  border-color:#999;
-  padding: 7px 10px 10px 10px;
-}
-
-p#info {
-  margin: 8px 0px 0px 0px;
-  font: 12px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-  width: 253px;
-  color: #666;
-  font-weight:400;
-}
-
-div#force {
-  position:absolute;
-  top:0px;
-  left:0px;
-  z-index: 0;
-}
-
-h1 {
-  margin: 0px;
-  font: 24px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-  color: #666;
-  font-weight:500;
-}
-
-h2 {
-  margin: 0px 0px 0px 1px;
-  font: 14px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-  color: #999;
-  font-weight:200;
-}
-
-h3 {
-  margin: 0px 0px 8px 0px;
-  font: 18px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-  color: #666;
-  font-weight:700;
-}
-
-h4 {
-  margin: 0px;
-  font: 12px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-  color: #666;
-  font-weight:700;
-}
-ul {
-  margin: 0px 0px 2px 0px;
-  font: 11px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
-  color: #999;
-  font-weight:700;
-}
-
-span#solid {
-  margin: 0px;
-  padding: 0px;
-  border-bottom: 1px solid #999;
-}
-
-span#dashed {
-  margin: 0px;
-  padding: 0px;
-  border-bottom: 1px dashed #999;
-}
-
-a {
-  text-decoration: underline;
-  color: #aaa;
-}
-a:visited {
-    color: #aaa;
-}
-
-a:hover {
-    color: #ccc;
-}
-
-hr {
-  display: block;
-  height: 1px;
-  border: 0;
-  border-top: 1px solid #ccc;
-  margin:; 3px 0px 3px 0px;
-  padding: 0;
-  width: 293px;
-}
-
-</style>
+<head>
+  <title>CS Force Graph</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" type="text/css" href="styles.css"/>
+</head>
 <body>
   <div id="header">
     <h1>CS Force Graph</h1>
@@ -136,41 +17,93 @@ hr {
   </div>
   <div id="legend">
     <h3>Legend</h3>
-    <h4>Node Colors:</h4>
+    <h4>Nodes:</h4>
     <ul style="margin-bottom: 6px">
-      <li style="color: #ace">Lower Div CS Courses</li>
-      <li style="color: #17b">Upper Div CS Requirements</li>
-      <li style="color: #96b">Upper Div CS Electives</li>
-      <li style="color: #2a2">Math Courses</li>
-      <li style="color: #f70">Science Courses</li>
-      <li style="color: #753">Writing II (Ethics)</li>
+      <li style="color: #ace">
+        <label><input type="checkbox" checked value="lowerdiv" onclick="updateForce();">
+          Lower Div CS Courses
+        </label>
+      </li>
+      <li style="color: #17b">
+        <label><input type="checkbox" checked value="upperdiv" onclick="updateForce();">
+          Upper Div CS Requirements
+        </label>
+      </li>
+      <li style="color: #96b">
+        <label><input type="checkbox" checked value="elective" onclick="updateForce();">
+          Upper Div CS Electives
+        </label>
+      </li>
+      <li style="color: #2a2">
+        <label><input type="checkbox" checked value="math" onclick="updateForce();">
+          Math Courses
+        </label>
+      </li>
+      <li style="color: #f70">
+        <label><input type="checkbox" checked value="science" onclick="updateForce();">
+          Science Courses
+        </label>
+      </li>
+      <li style="color: #753">
+        <label><input type="checkbox" checked value="writing" onclick="updateForce();">
+          Writing II (Ethics)
+        </label>
+      </li>
     </ul>
     <h4>Lines (Requisites):</h4>
     <ul>
-      <li><span id="solid">Solid</span> - Enforced</li>
-      <li><span id="dashed">Dashed</span> - Recommended</li>
+      <li>
+        <label><input type="checkbox" checked value="Enforced" onclick="updateForce();">
+          <span id="solid">Solid</span> - Enforced
+        </label>
+      </li>
+      <li>
+        <label><input type="checkbox" checked value="Recommended" onclick="updateForce();">
+          <span id="dashed">Dashed</span> - Recommended
+        </label>
+      </li>
     </ul>
   </div>
 
   <div id="force">
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script>
+
+    var color = {
+        "lowerdiv": "#ace",
+        "upperdiv": "#17b",
+        "math": "#2a2",
+        "science": "#f70",
+        "elective": "#96b",
+        "writing": "#753"
+    };
+
     // width and height for svg element
     var width = Math.max(800, window.innerWidth - 20),
         height = Math.max(500, window.innerHeight - 20);
 
-    // starts force layout and svg element
+    // initialize force layout
     var force = d3.layout.force()
         .gravity(0.13)
         .charge(-340)
         .linkDistance(110)
         .size([width, height]);
 
+    // nodes and links for the force layout
+    var masterNodes = [],
+        masterLinks = [];
+
+    // initialize svg elements
     var svg = d3.select("body").append("svg")
         .attr("width", width)
         .attr("height", height);
 
-    svg.append("defs").append("marker") // for line arrow
+    // node and link for svg element
+    var node = svg.selectAll(".node"),
+        link = svg.selectAll(".link");
+
+    // define line arrow
+    svg.append("defs").append("marker")
         .attr("id", "arrowhead")
         .attr("refX", 18)
         .attr("refY", 3)
@@ -181,58 +114,45 @@ hr {
         .attr("d", "M 0,0 V 6 L8,3 Z")
         .attr("fill", "#BBBBBB");
 
-    // json
-    d3.json("courses.json", function(error, graph) {
-      // grab node and relation values from data
-      var nodes = graph.nodes;
-      var relations = graph.relations;
+    // update svg element on each force tick
+    force.on("tick", function() {
+      link.attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
 
-      //parse relations into links
-      var links = [];
-      relations.forEach(function(e) { 
-          // get source and target index
-          var sourceIndex = nodes.filter(function(n) { return n.name === e.source; })[0],
-              targetIndex = nodes.filter(function(n) { return n.name === e.target; })[0];
-          // push tuple onto link array
-          links.push({source: sourceIndex, target: targetIndex, type: e.type});
-      });
+      node.attr("transform", function(d) { 
+          return "translate(" + d.x + "," + d.y + ")"; });
+    });
 
-      // set nodes and links and starts
-      force
-          .nodes(nodes)
-          .links(links)
-          .start();
+    // synchronize svg display of nodes and links in force layout
+    function updateGraph() {
+      link = link.data(force.links(), function(d) { return d.source.name + "-" + d.target.name; });
+      link.enter()
+        .append("line")
+        .attr("class", "link")
+        .attr("stroke-dasharray", function(d) {
+          if(d.type == "Recommended") return "5,5";
+          else return "0,0";
+        })
+        .attr("marker-end", "url(#arrowhead)");
+      link.exit().remove();
 
-      // draw links
-      var link = svg.selectAll(".link")
-          .data(links)
-        .enter().append("line")
-          .attr("class", "link")
-          .attr("stroke-dasharray", function(d) {
-            if(d.type == "Recommended") return "5,5";
-            else return "0,0";
-          })
-          .attr("marker-end", "url(#arrowhead)");
+      node = node.data(force.nodes(), function(d) { return d.name; });
+      var nodeEnter = node.enter()
+        .append("g")
+        .attr("class", "node")
+        .call(force.drag);
+      nodeEnter.append("circle")
+        .attr("r", 10)
+        .style("fill", function(d) { return color[d.type]; });
+      nodeEnter.append("text")
+        .attr("x", 12)
+        .attr("dy", ".35em")
+        .text(function(d) {return d.name;} );
+      node.exit().remove();
 
-      // create svg group for nodes and text
-      var node = svg.selectAll(".node")
-          .data(nodes)
-        .enter().append("g")
-          .attr("class", "node")
-          .call(force.drag);
-
-      // draw nodes, color depending on type of class
-      var color = ["#ace", "#17b", "#2a2", "#f70", "#96b", "#753"];
-      node.append("circle")
-          .attr("r", 10)
-          .style("fill", function(d) { 
-            if(d.type == "lowerdiv") return color[0];
-            if(d.type == "upperdiv") return color[1];
-            if(d.type == "math") return color[2];
-            if(d.type == "science") return color[3];
-            if(d.type == "elective") return color[4];
-            if(d.type == "writing") return color[5];
-          });
+      // bind events to node
       node.on("mouseover", function(d){
           var currentNode = d3.select(this).select("circle");
           var currentColor = d3.rgb(currentNode.style("fill"));
@@ -258,32 +178,51 @@ hr {
           currentNode
             .attr("r", 10)
             .style("stroke-width", 0)
-            .style("fill", function(d) { 
-              if(d.type == "lowerdiv") return color[0];
-              if(d.type == "upperdiv") return color[1];
-              if(d.type == "math") return color[2];
-              if(d.type == "science") return color[3];
-              if(d.type == "elective") return color[4];
-              if(d.type == "writing") return color[5];
-            });
+            .style("fill", function(d) { return color[d.type]; });
+      });
+    }
+
+    // update nodes and links in force layout based on checkboxes
+    function updateForce() {
+
+      var show = {};
+      d3.selectAll('input').each(function(e, i) {
+          e = d3.select(this)
+          show[e.property('value')] = e.property('checked');
+      });
+      masterNodes.forEach(function(e) {
+        show[e.name] = show[e.type]
       });
 
-      // node text
-      node.append("text")
-          .attr("x", 12)
-          .attr("dy", ".35em")
-          .text(function(d) {return d.name;} );
+      var nodes = masterNodes.filter(function(n) { return show[n.type]; });
+      var links = masterLinks.filter(function(n) { return show[n.type] && show[n.source.name] && show[n.target.name]; });
 
-      // force tick
-      force.on("tick", function() {
-        link.attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
+      force
+        .nodes(nodes)
+        .links(links)
+        .start()
 
-        node.attr("transform", function(d) { 
-            return "translate(" + d.x + "," + d.y + ")"; });
+      updateGraph();
+
+    }
+
+    // load data
+    d3.json("courses.json", function(error, graph) {
+
+      // grab node and relation values from data
+      masterNodes = graph.nodes;
+      var relations = graph.relations;
+      //parse relations into links
+      relations.forEach(function(e) { 
+          // get source and target index
+          var sourceIndex = masterNodes.filter(function(n) { return n.name === e.source; })[0],
+              targetIndex = masterNodes.filter(function(n) { return n.name === e.target; })[0];
+          // push tuple onto link array
+          masterLinks.push({source: sourceIndex, target: targetIndex, type: e.type});
       });
+
+      updateForce()
+
     });
   </script></div>
 </body>

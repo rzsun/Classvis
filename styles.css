@@ -1,0 +1,121 @@
+circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text {
+  fill: #111;
+  font: 10px sans-serif;
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+div#header {
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0);
+}
+
+div#legend {
+  position:absolute;
+  bottom:12px;
+  left:12px;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0);
+  border-width:1px;
+  border-style:solid;
+  border-color:#999;
+  padding: 7px 10px 10px 10px;
+}
+
+p#info {
+  margin: 8px 0px 0px 0px;
+  font: 12px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  width: 253px;
+  color: #666;
+  font-weight:400;
+}
+
+div#force {
+  position:absolute;
+  top:0px;
+  left:0px;
+  z-index: 0;
+}
+
+h1 {
+  margin: 0px;
+  font: 24px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  color: #666;
+  font-weight:500;
+}
+
+h2 {
+  margin: 0px 0px 0px 1px;
+  font: 14px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  color: #999;
+  font-weight:200;
+}
+
+h3 {
+  margin: 0px 0px 8px 0px;
+  font: 18px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  color: #666;
+  font-weight:700;
+}
+
+h4 {
+  margin: 0px;
+  font: 12px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  color: #666;
+  font-weight:700;
+}
+ul {
+  margin: 0px 0px 2px 0px;
+  font: 11px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
+  color: #999;
+  font-weight:700;
+  list-style-type: none;
+  padding-left: 20px;
+}
+
+span#solid {
+  margin: 0px;
+  padding: 0px;
+  border-bottom: 1px solid #999;
+}
+
+span#dashed {
+  margin: 0px;
+  padding: 0px;
+  border-bottom: 1px dashed #999;
+}
+
+a {
+  text-decoration: underline;
+  color: #aaa;
+}
+a:visited {
+    color: #aaa;
+}
+
+a:hover {
+    color: #ccc;
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin:; 3px 0px 3px 0px;
+  padding: 0;
+  width: 293px;
+}
