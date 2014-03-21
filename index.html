@@ -160,18 +160,6 @@
           currentNode
             .attr("r", 11.5)
             .style("fill", currentColor.brighter(0.5));
-            /*
-            var nodeNeighbors = graph.links.filter(function(link) {
-                return link.source.index === d.index || link.target.index === d.index;
-            })
-            .map(function(link) {
-                 return link.source.index === d.index ? link.target.index : link.source.index;
-            });               
-            svg.selectAll("circle").style("fill", "gray");
-            svg.selectAll("circle").filter(function(node) {
-                return nodeNeighbors.indexOf(node.index) > -1;
-            }).style('stroke', 'orange');
-            */
       }).on("mouseout",  function(d) {
           var currentNode = d3.select(this).select("circle");
           var currentColor = d3.rgb(currentNode.style("fill"));
