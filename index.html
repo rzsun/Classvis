@@ -98,9 +98,12 @@
         .attr("width", width)
         .attr("height", height);
 
-    // node and link for svg element
-    var node = svg.selectAll(".node"),
-        link = svg.selectAll(".link");
+    // link and node for svg element
+    // putting elements inside container groups enforces drawing order
+    svg.append("g").attr("class", "links")
+    svg.append("g").attr("class", "nodes")
+    var node = svg.select(".nodes").selectAll(".node"),
+        link = svg.select(".links").selectAll(".link");
 
     // define line arrow
     svg.append("defs").append("marker")
