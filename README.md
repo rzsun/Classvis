@@ -1,4 +1,4 @@
-# CS Force Graph
+# Classvis
 
 A force directed graph implemented using [Force Layout](https://github.com/mbostock/d3/wiki/Force-Layout) from [d3.js](http://d3js.org).
 
