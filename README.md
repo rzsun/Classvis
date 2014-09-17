@@ -15,3 +15,5 @@ Course types
 Requisite types
 - Enforced
 - Recommended
+
+*please note the some requisites may be missing as the CS department recently changed the requisites for some courses. Pull requests with updated courses are welcome!
