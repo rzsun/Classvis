@@ -44,9 +44,11 @@ p#info {
 }
 
 p#note {
-  margin-top: 10px;
-  font: 8px;
+  margin: 8px 0px 0px 0px;
+  font: 7px "Helvetica Neue","MgOpen Moderna", Arial, sans-serif;
   color: #bbb;
+  width: 253px;
+  font-weight:400;
 }
 
 div#force {
