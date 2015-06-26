@@ -43,6 +43,12 @@ p#info {
   font-weight:400;
 }
 
+p#note {
+  margin-top: 10px;
+  font: 8px;
+  color: #bbb;
+}
+
 div#force {
   position:absolute;
   top:0px;
